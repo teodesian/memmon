@@ -1,0 +1,268 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "iteration": 1656342487734,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "TA7xhL3nk"
+      },
+      "description": "rss per process",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decmbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "TA7xhL3nk"
+          },
+          "queryText": "WITH RECURSIVE cte(org, part, rest, pos) AS (\n  VALUES(replace(replace('$process','}',''),'{',''), '',replace(replace('$process','}',''),'{','')|| ',', 0)\n  UNION ALL\n  SELECT org,\n         replace(SUBSTR(org, pos+1, INSTR(rest, ',') ),',',''),\n         SUBSTR(rest, INSTR(rest, ',')+1),\n         pos + INSTR(rest, ',')\n  FROM cte\n  WHERE INSTR(rest, ',') > 0\n) SELECT\ntime,\nname as displayName,\n(rss / 1024) as rss\nFROM procsummary\nWHERE\nname IN (select part from cte)\nAND\ntime >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "time series",
+          "rawQueryText": "WITH RECURSIVE cte(org, part, rest, pos) AS (\n  VALUES(replace(replace('$process','}',''),'{',''), '',replace(replace('$process','}',''),'{','')|| ',', 0)\n  UNION ALL\n  SELECT org,\n         replace(SUBSTR(org, pos+1, INSTR(rest, ',') ),',',''),\n         SUBSTR(rest, INSTR(rest, ',')+1),\n         pos + INSTR(rest, ',')\n  FROM cte\n  WHERE INSTR(rest, ',') > 0\n) SELECT\ntime,\nname as displayName,\n(rss / 1024) as rss\nFROM procsummary\nWHERE\nname IN (select part from cte)\nAND\ntime >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ]
+        }
+      ],
+      "title": "rss per process",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "TA7xhL3nk"
+      },
+      "description": "processes per program",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "TA7xhL3nk"
+          },
+          "queryText": "WITH RECURSIVE cte(org, part, rest, pos) AS (\n  VALUES(replace(replace('$process','}',''),'{',''), '',replace(replace('$process','}',''),'{','')|| ',', 0)\n  UNION ALL\n  SELECT org,\n         replace(SUBSTR(org, pos+1, INSTR(rest, ',') ),',',''),\n         SUBSTR(rest, INSTR(rest, ',')+1),\n         pos + INSTR(rest, ',')\n  FROM cte\n  WHERE INSTR(rest, ',') > 0\n) SELECT\ntime,\nname as displayName,\nnum_procs as num_procs\nFROM procsummary\nWHERE\nname IN (select part from cte)\nAND\ntime >= $__from / 1000 and time < $__to / 1000",
+          "queryType": "table",
+          "rawQueryText": "WITH RECURSIVE cte(org, part, rest, pos) AS (\n  VALUES(replace(replace('$process','}',''),'{',''), '',replace(replace('$process','}',''),'{','')|| ',', 0)\n  UNION ALL\n  SELECT org,\n         replace(SUBSTR(org, pos+1, INSTR(rest, ',') ),',',''),\n         SUBSTR(rest, INSTR(rest, ',')+1),\n         pos + INSTR(rest, ',')\n  FROM cte\n  WHERE INSTR(rest, ',') > 0\n) SELECT\ntime,\nname as displayName,\nnum_procs as num_procs\nFROM procsummary\nWHERE\nname IN (select part from cte)\nAND\ntime >= $__from / 1000 and time < $__to / 1000",
+          "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ]
+        }
+      ],
+      "title": "Processes per program",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "frser-sqlite-datasource",
+          "uid": "TA7xhL3nk"
+        },
+        "definition": "SELECT name FROM processes ORDER BY name ASC;",
+        "description": "name of the process monitored",
+        "hide": 0,
+        "includeAll": true,
+        "label": "process name",
+        "multi": true,
+        "name": "process",
+        "options": [],
+        "query": "SELECT name FROM processes ORDER BY name ASC;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "2022-06-27T08:32:20.153Z",
+    "to": "2022-06-27T20:32:20.153Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "System status",
+  "uid": "ECc20Y37k",
+  "version": 14,
+  "weekStart": ""
+}
